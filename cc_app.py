@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 cc_info = yaml.safe_load(open('./resources/name.yaml'))
-moves = set(['up', 'down', 'left', 'right', 'fire-up', 'fire-down', 'fire-right', 'fire-left'])
+moves = set(['up', 'down', 'left', 'right'])
+moves_and_fire = set(['up', 'down', 'left', 'right', 'fire-up', 'fire-down', 'fire-right', 'fire-left'])
 
 @app.route('/name', methods=['POST'])
 def get_name():
@@ -23,7 +24,12 @@ def get_name():
 @app.route('/move', methods=['POST'])
 def get_move():
     new_move = request.json
-    my_move = random.choice(tuple(moves))
+
+    if (new_move["player"]["fire"]):
+        my_move = random.choice(tuple(moves_and_fire))
+    else:
+        logger.info("Can't fire!!")
+        my_move = random.choice(tuple(moves))
 
     return jsonify({'move': my_move})
 
